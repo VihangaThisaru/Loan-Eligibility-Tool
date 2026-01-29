@@ -70,4 +70,17 @@ public class Applicant implements Comparable<Applicant> {
     public void setEligible(boolean eligible) {
         this.eligible = eligible;
     }
+
+    @Override
+    public String toString() {
+        return "Applicant{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", salary=" + salary +
+                ", loanAmount=" + loanAmount +
+                ", creditScore=" + creditScore +
+                ", eligible=" + eligible +
+                '}';
+    }
+
 }
