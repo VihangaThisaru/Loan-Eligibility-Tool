@@ -72,4 +72,44 @@ public class DecisionLinkedList implements Iterable<LoanDecision> {
         size = 0;
     }
 
+    @Override
+    public Iterator<LoanDecision> iterator() {
+        return new Iterator<LoanDecision>() {
+            private DecisionNode current = head;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public LoanDecision next() {
+                LoanDecision decision = current.decision;
+                current = current.next;
+                return decision;
+            }
+        };
+    }
+
+    // Get a string values for auit display
+    public String getAuditTrail() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Decision Audit Trail (Linked List)\n");
+        sb.append("================================\n");
+        DecisionNode current = head;
+        int index = 1;
+        while (current != null) {
+            sb.append(index++).append(". ").append(current.decision.getApplicant().getId())
+                    .append(" -> ").append(current.decision.getRiskTier().getDisplayName())
+                    .append(" | ");
+            if (current.next != null) {
+                sb.append("next: ").append(current.next.decision.getApplicant().getId());
+            } else {
+                sb.append("(tail)");
+            }
+            sb.append("\n");
+            current = current.next;
+        }
+        return sb.toString();
+    }
 }
