@@ -11,7 +11,7 @@ public class Applicant implements Comparable<Applicant> {
     private boolean eligible;
 
     public Applicant(String id, double monthlyIncome, double existingDebt,
-            int creditScore, int employmentDuration, double loanAmountRequested) {
+                     int creditScore, int employmentDuration, double loanAmountRequested) {
         this.id = id;
         this.monthlyIncome = monthlyIncome;
         this.existingDebt = existingDebt;
@@ -59,10 +59,6 @@ public class Applicant implements Comparable<Applicant> {
         return creditScore;
     }
 
-<<<<<<< HEAD
-    public int getRiskScore() {
-        return (int) (1 - (creditScore / 850.0)); // Normalize credit score to a risk score between 0 and 1
-=======
     public int getEmploymentDuration() {
         return employmentDuration;
     }
@@ -73,7 +69,6 @@ public class Applicant implements Comparable<Applicant> {
 
     public double getRiskScore() {
         return riskScore;
->>>>>>> f66ec9bbca1fb12e574958af2d735258fc32bad6
     }
 
     public boolean isEligible() {
@@ -88,12 +83,9 @@ public class Applicant implements Comparable<Applicant> {
         this.riskScore = riskScore;
     }
 
-<<<<<<< HEAD
-=======
     @Override
     public String toString() {
         return String.format("Applicant %s: Income=$%.2f, Debt=$%.2f, Credit=%d, Risk=%.1f",
                 id, monthlyIncome, existingDebt, creditScore, riskScore);
     }
->>>>>>> f66ec9bbca1fb12e574958af2d735258fc32bad6
 }
