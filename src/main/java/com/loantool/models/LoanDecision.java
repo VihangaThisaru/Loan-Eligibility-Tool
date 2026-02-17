@@ -87,7 +87,7 @@ public class LoanDecision {
         return interestRate;
     }
 
-    // Formatted getters for display
+    // Formatted getters
     public String getFormattedDecisionTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return decisionTime.format(formatter);
@@ -113,7 +113,7 @@ public class LoanDecision {
         return String.format("$%,.2f", monthlyPayment);
     }
 
-    // Setters (for flexibility)
+    // Setters
     public void setApplicant(Applicant applicant) {
         this.applicant = applicant;
         this.recommendedLimit = calculateRecommendedLimit();
@@ -176,5 +176,30 @@ public class LoanDecision {
 
     public String getApprovalStatusSymbol() {
         return approved ? "✅" : "❌";
+    }
+
+    // func to get detailed explanation of the decision
+    public String getDetailedExplanation() {
+        StringBuilder explanation = new StringBuilder();
+
+        explanation.append("Loan Decision Analysis:\n");
+        explanation.append("======================\n");
+        explanation.append("Applicant ID: ").append(applicant.getId()).append("\n");
+        explanation.append("Risk Tier: ").append(riskTier.getDisplayName()).append(" ").append(getRiskColorCode())
+                .append("\n");
+        explanation.append("Risk Score: ").append(String.format("%.1f", applicant.getRiskScore())).append("/100\n");
+        explanation.append("Approval Status: ").append(approved ? "APPROVED" : "REJECTED").append(" ")
+                .append(getApprovalStatusSymbol()).append("\n");
+
+        if (approved) {
+            explanation.append("Recommended Limit: ").append(getFormattedRecommendedLimit()).append("\n");
+            explanation.append("Interest Rate: ").append(getFormattedInterestRate()).append("\n");
+            explanation.append("Monthly Payment (36 months): ").append(getFormattedMonthlyPayment(36)).append("\n");
+        }
+
+        explanation.append("Decision Reason: ").append(decisionReason).append("\n");
+        explanation.append("Decision Time: ").append(getFormattedDecisionTime()).append("\n");
+
+        return explanation.toString();
     }
 }
