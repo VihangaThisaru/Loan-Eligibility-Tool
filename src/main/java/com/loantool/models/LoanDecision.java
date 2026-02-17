@@ -202,4 +202,129 @@ public class LoanDecision {
 
         return explanation.toString();
     }
+
+    // JSON conversion methods
+    public String toJSON() {
+        return String.format(
+                "{\"applicantId\":\"%s\",\"monthlyIncome\":%.2f,\"existingDebt\":%.2f," +
+                        "\"creditScore\":%d,\"employmentMonths\":%d,\"loanAmountRequested\":%.2f," +
+                        "\"riskScore\":%.1f,\"riskTier\":\"%s\",\"approved\":%s," +
+                        "\"decisionReason\":\"%s\",\"recommendedLimit\":%.2f,\"interestRate\":%.3f," +
+                        "\"decisionTime\":\"%s\"}",
+                applicant.getId(),
+                applicant.getMonthlyIncome(),
+                applicant.getExistingDebt(),
+                applicant.getCreditScore(),
+                applicant.getEmploymentDuration(),
+                applicant.getLoanAmountRequested(),
+                applicant.getRiskScore(),
+                riskTier.name(),
+                approved,
+                decisionReason.replace("\"", "\\\""),
+                recommendedLimit,
+                interestRate,
+                getFormattedDecisionTime());
+    }
+
+    // CSV conversion methods
+    public String toCSV() {
+        return String.format(
+                "%s,%.2f,%.2f,%d,%d,%.2f,%.1f,%s,%s,%.2f,%.3f,%s,\"%s\"",
+                applicant.getId(),
+                applicant.getMonthlyIncome(),
+                applicant.getExistingDebt(),
+                applicant.getCreditScore(),
+                applicant.getEmploymentDuration(),
+                applicant.getLoanAmountRequested(),
+                applicant.getRiskScore(),
+                riskTier.name(),
+                approved ? "YES" : "NO",
+                recommendedLimit,
+                interestRate,
+                getFormattedDecisionTime(),
+                decisionReason.replace("\"", "\"\""));
+    }
+
+    public static String getCSVHeader() {
+        return "ApplicantID,MonthlyIncome,ExistingDebt,CreditScore,EmploymentMonths," +
+                "LoanAmountRequested,RiskScore,RiskTier,Approved,RecommendedLimit," +
+                "InterestRate,DecisionTime,DecisionReason";
+    }
+
+    // Clone method
+    public LoanDecision clone() {
+        return new LoanDecision(
+                applicant,
+                riskTier,
+                approved,
+                decisionReason,
+                interestRate);
+    }
+
+    // Validation method
+    public boolean isValid() {
+        return applicant != null &&
+                riskTier != null &&
+                decisionReason != null &&
+                !decisionReason.trim().isEmpty() &&
+                decisionTime != null &&
+                recommendedLimit >= 0 &&
+                interestRate >= 0;
+    }
+
+    // Comparison methods
+    public boolean hasHigherRiskThan(LoanDecision other) {
+        return this.riskTier.ordinal() > other.getRiskTier().ordinal();
+    }
+
+    public boolean hasLowerRiskThan(LoanDecision other) {
+        return this.riskTier.ordinal() < other.getRiskTier().ordinal();
+    }
+
+    public boolean isSimilarRisk(LoanDecision other) {
+        return this.riskTier == other.getRiskTier();
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+                "LoanDecision [ID: %s, Risk: %s, Approved: %s, Limit: %s, Reason: %s]",
+                applicant.getId(),
+                riskTier.getDisplayName(),
+                approved ? "YES" : "NO",
+                getFormattedRecommendedLimit(),
+                decisionReason.length() > 50 ? decisionReason.substring(0, 47) + "..." : decisionReason);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+
+        LoanDecision that = (LoanDecision) obj;
+
+        return approved == that.approved &&
+                Double.compare(that.recommendedLimit, recommendedLimit) == 0 &&
+                Double.compare(that.interestRate, interestRate) == 0 &&
+                applicant.equals(that.applicant) &&
+                riskTier == that.riskTier &&
+                decisionReason.equals(that.decisionReason);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = applicant.hashCode();
+        result = 31 * result + riskTier.hashCode();
+        result = 31 * result + (approved ? 1 : 0);
+        result = 31 * result + decisionReason.hashCode();
+        temp = Double.doubleToLongBits(recommendedLimit);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(interestRate);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
 }
