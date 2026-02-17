@@ -32,7 +32,8 @@ public class ApplicantMaxHeap {
     }
 
     public Applicant extractMax() {
-        if (size == 0) return null;
+        if (size == 0)
+            return null;
         Applicant max = heap.get(0);
         heap.set(0, heap.get(size - 1));
         size--;
@@ -69,7 +70,8 @@ public class ApplicantMaxHeap {
             if (right < size && heap.get(right).getRiskScore() > heap.get(largest).getRiskScore()) {
                 largest = right;
             }
-            if (largest == index) break;
+            if (largest == index)
+                break;
 
             swap(index, largest);
             index = largest;
