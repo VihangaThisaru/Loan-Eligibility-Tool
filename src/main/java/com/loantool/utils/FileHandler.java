@@ -240,4 +240,102 @@ public class FileHandler {
         return new File(filePath).exists();
     }
 
+    public static void createDirectoryIfNotExists(String directoryPath) {
+        File dir = new File(directoryPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+    }
+
+    public static List<String> listFilesInDirectory(String directoryPath) throws IOException {
+        List<String> files = new ArrayList<>();
+        File dir = new File(directoryPath);
+
+        if (dir.exists() && dir.isDirectory()) {
+            File[] fileList = dir.listFiles();
+            if (fileList != null) {
+                for (File file : fileList) {
+                    if (file.isFile()) {
+                        files.add(file.getName());
+                    }
+                }
+            }
+        }
+
+        return files;
+    }
+
+    public static void appendToFile(String content, String filePath) throws IOException {
+        // Create directory if it doesn't exist
+        File outputDir = new File(filePath).getParentFile();
+        if (outputDir != null && !outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        try (FileWriter writer = new FileWriter(filePath, true)) {
+            writer.write(content);
+            writer.write(System.lineSeparator());
+        }
+    }
+
+    public static void copyFile(String sourcePath, String destinationPath) throws IOException {
+        Files.copy(Paths.get(sourcePath), Paths.get(destinationPath));
+    }
+
+    public static void deleteFile(String filePath) throws IOException {
+        Files.deleteIfExists(Paths.get(filePath));
+    }
+
+    public static void backupResults() throws IOException {
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String backupDir = "data/backup/" + timestamp;
+
+        createDirectoryIfNotExists(backupDir);
+
+        // Backup results.json
+        if (fileExists("data/output/results.json")) {
+            copyFile("data/output/results.json", backupDir + "/results.json");
+        }
+
+        // Backup results.csv
+        if (fileExists("data/output/results.csv")) {
+            copyFile("data/output/results.csv", backupDir + "/results.csv");
+        }
+
+        System.out.println("📁 Backup created in: " + backupDir);
+    }
+
+    public static void exportForExcel(List<LoanDecision> decisions, String filePath) throws IOException {
+        // Create directory if it doesn't exist
+        File outputDir = new File(filePath).getParentFile();
+        if (outputDir != null && !outputDir.exists()) {
+            outputDir.mkdirs();
+        }
+
+        try (FileWriter writer = new FileWriter(filePath)) {
+            // Write header for Excel
+            writer.write("Applicant ID\tMonthly Income\tExisting Debt\tCredit Score\t" +
+                    "Employment Months\tLoan Amount Requested\tRisk Score\t" +
+                    "Risk Tier\tApproved\tRecommended Limit\tInterest Rate\tDecision Reason\n");
+
+            // Write data
+            for (LoanDecision decision : decisions) {
+                Applicant applicant = decision.getApplicant();
+
+                writer.write(String.format("%s\t%.2f\t%.2f\t%d\t%d\t%.2f\t%.1f\t%s\t%s\t%.2f\t%.2f%%\t%s\n",
+                        applicant.getId(),
+                        applicant.getMonthlyIncome(),
+                        applicant.getExistingDebt(),
+                        applicant.getCreditScore(),
+                        applicant.getEmploymentDuration(),
+                        applicant.getLoanAmountRequested(),
+                        applicant.getRiskScore(),
+                        decision.getRiskTier().getDisplayName(),
+                        decision.isApproved() ? "YES" : "NO",
+                        decision.getRecommendedLimit(),
+                        decision.getRiskTier().getBaseInterestRate() * 100,
+                        decision.getDecisionReason()));
+            }
+        }
+    }
 }
